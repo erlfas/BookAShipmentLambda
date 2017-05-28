@@ -1,6 +1,6 @@
 # BookAShipmentLambda
 
-GET endpoint for the BookAShipment1 project.
+POST endpoint for the BookAShipment1 project.
 
 An AWS Lambda function.
 
