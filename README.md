@@ -8,26 +8,30 @@ An AWS Lambda function.
 
 ```
 {
-    "consignor": {
-        "name": "",
-        "address": "",
-        "postalCode": "",
-        "city": "",
-        "email": "",
-        "phone": ""
-    },
-    "consignee": {
-        "name": "",
-        "address": "",
-        "postalCode": "",
-        "city": "",
-        "email": "",
-        "phone": ""
-    },
-    "shipmentType": {
-        "type": "small",
-        "price": 123
-    }
+    "shipments": [
+        {
+            "consignor": {
+                "name": "",
+                "address": "",
+                "postalCode": "",
+                "city": "",
+                "email": "",
+                "phone": ""
+            },
+            "consignee": {
+                "name": "",
+                "address": "",
+                "postalCode": "",
+                "city": "",
+                "email": "",
+                "phone": ""
+            },
+            "shipmentType": {
+                "type": "small",
+                "price": 123
+            }
+        }
+    ]
 }
 ```
 
