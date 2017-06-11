@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
@@ -23,8 +21,6 @@ public class LambdaFunctionHandler implements RequestHandler<Shipments, BookShip
 
     @Override
     public BookShipmentResponse handleRequest(Shipments shipments, Context context) {
-        context.getLogger().log("Input: " + shipments);
-        
         final AmazonDynamoDB ddb = AmazonDynamoDBClientBuilder.standard()
         			.withRegion(Regions.EU_WEST_1)
         			.build();
@@ -43,12 +39,12 @@ public class LambdaFunctionHandler implements RequestHandler<Shipments, BookShip
         	consignor.put("phone", shipment.getConsignor().getPhone());
         	
         	final Map<String, String> consignee = new HashMap<>();
-        	consignor.put("name", shipment.getConsignee().getName());
-        	consignor.put("address", shipment.getConsignee().getAddress());
-        	consignor.put("city", shipment.getConsignee().getCity());
-        	consignor.put("postalCode", shipment.getConsignee().getPostalCode());
-        	consignor.put("email", shipment.getConsignee().getEmail());
-        	consignor.put("phone", shipment.getConsignee().getPhone());
+        	consignee.put("name", shipment.getConsignee().getName());
+        	consignee.put("address", shipment.getConsignee().getAddress());
+        	consignee.put("city", shipment.getConsignee().getCity());
+        	consignee.put("postalCode", shipment.getConsignee().getPostalCode());
+        	consignee.put("email", shipment.getConsignee().getEmail());
+        	consignee.put("phone", shipment.getConsignee().getPhone());
         	
         	final String inputShipmentType = shipment.getShipmentType().getType();
         	final Integer price;
@@ -59,11 +55,12 @@ public class LambdaFunctionHandler implements RequestHandler<Shipments, BookShip
         	} else if ("large".equalsIgnoreCase(inputShipmentType)) {
         		price = 259;
         	} else {
+        		context.getLogger().log("Erroneous shipment type: " + inputShipmentType);
         		return new BookShipmentResponse("FAILED", 400, "", "");
         	}
         	
-        	final Map<String, Object> shipmentType = new HashMap<>();
-        	shipmentType.put("price", shipment.getShipmentType().getNumber());
+        	final Map<String, String> shipmentType = new HashMap<>();
+        	shipmentType.put("price", price.toString());
         	shipmentType.put("type", inputShipmentType);
         	
         	final String orderTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"));
@@ -82,7 +79,7 @@ public class LambdaFunctionHandler implements RequestHandler<Shipments, BookShip
             	final int status = outcome.getPutItemResult().getSdkHttpMetadata().getHttpStatusCode();
             	
             	if (status != 200) {
-            		// TODO
+            		context.getLogger().log("Status after put: " + status);
             	}
         	} catch (Exception e) {
         		context.getLogger().log("Exception: " + e);
